@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gocolly/colly/v2"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -37,7 +39,8 @@ func main() {
 
 	// Find and visit all links
 	c.OnHTML(".pokemonname", func(e *colly.HTMLElement) {
-		//fmt.Println(e.Text)
+		s := strings.Split(e.Text, ".")
+		fmt.Println(s[1])
 		pokemons = append(pokemons, e.Text)
 	})
 
