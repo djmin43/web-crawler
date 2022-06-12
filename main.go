@@ -1,12 +1,22 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/gocolly/colly/v2"
+	"log"
+	"os"
 	"time"
 )
 
 func main() {
+
+	fName := "pokemon.json"
+	file, err := os.Create(fName)
+	if err != nil {
+		log.Fatalf("Cannot create file %q: %s\n", fName, err)
+		return
+	}
+	defer file.Close()
 
 	domain := "pokemongo.inven.co.kr"
 	c := colly.NewCollector(
@@ -23,14 +33,19 @@ func main() {
 		RandomDelay: 1 * time.Second,
 	})
 
+	pokemons := make([]string, 0, 200)
+
 	// Find and visit all links
-	c.OnHTML("span[class]", func(e *colly.HTMLElement) {
-		name := e.Attr("class")
-		if name == "pokemonname" {
-			fmt.Println(e.Text)
-		}
+	c.OnHTML(".pokemonname", func(e *colly.HTMLElement) {
+		//fmt.Println(e.Text)
+		pokemons = append(pokemons, e.Text)
 	})
 
 	c.Visit("https://pokemongo.inven.co.kr/dataninfo/pokemon/")
 
+	enc := json.NewEncoder(file)
+	enc.SetIndent("", "  ")
+
+	// Dump json to the standard output
+	enc.Encode(pokemons)
 }
