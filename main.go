@@ -3,19 +3,34 @@ package main
 import (
 	"fmt"
 	"github.com/gocolly/colly/v2"
+	"time"
 )
 
 func main() {
-	c := colly.NewCollector()
+
+	domain := "pokemongo.inven.co.kr"
+	c := colly.NewCollector(
+		colly.AllowedDomains(domain),
+		colly.MaxDepth(1),
+	)
+
+	c.Limit(&colly.LimitRule{
+		// Filter domains affected by this rule
+		DomainGlob: domain + "/*",
+		// Set a delay between requests to these domains
+		Delay: 1 * time.Second,
+		// Add an additional random delay
+		RandomDelay: 1 * time.Second,
+	})
 
 	// Find and visit all links
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		e.Request.Visit(e.Attr("href"))
+	c.OnHTML("span[class]", func(e *colly.HTMLElement) {
+		name := e.Attr("class")
+		if name == "pokemonname" {
+			fmt.Println(e.Text)
+		}
 	})
 
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
-	})
+	c.Visit("https://pokemongo.inven.co.kr/dataninfo/pokemon/")
 
-	c.Visit("https://www.pokemonkorea.co.kr/pokedex")
 }
