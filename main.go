@@ -35,13 +35,20 @@ func main() {
 		RandomDelay: 1 * time.Second,
 	})
 
-	pokemons := make([]string, 0, 200)
+	type Pokemon struct {
+		Id   string `json:"id"`
+		Name string `json:"name"`
+	}
+	pokemons := make([]Pokemon, 0, 200)
 
 	// Find and visit all links
 	c.OnHTML(".pokemonname", func(e *colly.HTMLElement) {
 		s := strings.Split(e.Text, ".")
-		fmt.Println(s[1])
-		pokemons = append(pokemons, e.Text)
+		p := Pokemon{
+			Id:   s[0],
+			Name: s[1],
+		}
+		pokemons = append(pokemons, p)
 	})
 
 	c.Visit("https://pokemongo.inven.co.kr/dataninfo/pokemon/")
@@ -50,5 +57,7 @@ func main() {
 	enc.SetIndent("", "  ")
 
 	// Dump json to the standard output
+	fmt.Println(pokemons)
 	enc.Encode(pokemons)
+
 }
