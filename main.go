@@ -44,10 +44,9 @@ func main() {
 	// Find and visit all links
 	c.OnHTML(".pokemonname", func(e *colly.HTMLElement) {
 		s := strings.Split(e.Text, ".")
-		name := s[1]
 		p := Pokemon{
 			Id:   s[0],
-			Name: s[1][0 : len(name)-1],
+			Name: strings.TrimSpace(s[1]),
 		}
 		pokemons = append(pokemons, p)
 	})
