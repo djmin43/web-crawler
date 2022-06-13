@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gocolly/colly/v2"
 	"log"
 	"os"
@@ -57,7 +56,6 @@ func main() {
 	enc.SetIndent("", "  ")
 
 	// Dump json to the standard output
-	fmt.Println(pokemons)
 	enc.Encode(pokemons)
 
 }
